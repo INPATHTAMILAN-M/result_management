@@ -17,7 +17,7 @@ import os
 MEDIA_URL = '/media/'  # URL path for accessing media files
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Define the directory where files will be stored on your filesystem
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # This creates a 'media' folder in the root of your project
@@ -95,13 +95,14 @@ DATABASES = {
 
    'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'result',
+        'NAME': 'result_management',
         'USER': 'root',
-        'PASSWORD': 'KIT4compass!!!',
+        'PASSWORD': 'root',
         'HOST': 'localhost',
-        'PORT': '',
+        'PORT': '3307',
         'OPTIONS': {
         'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        'charset': 'utf8mb4',
         },
         
     }
