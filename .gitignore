@@ -9,6 +9,7 @@ db.sqlite3
 env/
 venv/
 static_collect/
+static_files/
 media/
 ENV/
 *.log
