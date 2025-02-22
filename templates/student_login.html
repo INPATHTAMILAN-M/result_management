@@ -29,10 +29,10 @@
     }
 
     .form-label {
-        text-align: center;
         display: block;
         width: 100%;
         margin-bottom: 0.5rem;
+        margin-left: 55px;
     }
 
     .g-recaptcha {
@@ -156,12 +156,14 @@
                             {% csrf_token %}
                             <div class="row gy-3 gy-md-4 overflow-hidden">
                                 <div class="col-12">
-                                    <input type="text" class="form-control mx-auto" name="register_no" id="register_no" placeholder="Registration Number" value="{{ form.register_no.value|default:'' }}" required>
+                                    <label for="register_no" class="form-label">Registration Number:</label>
+                                    <input type="text" class="form-control mx-auto" name="register_no" id="register_no"  value="{{ form.register_no.value|default:'' }}" required>
                                     <div class="invalid-feedback">
                                         Please enter your registration number.
                                     </div>
                                 </div>
                                 <div class="col-12">
+                                    <label for="dob" class="form-label">Date of Birth:</label>
                                     <input type="date" class="form-control mx-auto" name="dob" id="dob" value="{{ form.dob.value }}" placeholder="Date of Birth" required>
                                     <div class="invalid-feedback">
                                         Please enter your date of birth.
