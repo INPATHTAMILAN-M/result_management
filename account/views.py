@@ -103,7 +103,7 @@ def upload_exam_results(request):
                             is_revaluation = False
 
                         if duplicate_exists:
-                            error_rows.append(f"Row {index + 1}: Duplicate entry for Register No. {row['Register No.']}, Exam Code {row['Exam Code']}, and Date of Birth {row['Date of Birth']}")
+                            error_rows.append(f"Row {index + 1}: Duplicate entry for Register No. {row['Register No.']}, Course Code {row['Course Code']}, and Date of Birth {row['Date of Birth']}")
                         else:
                             # If no duplicate, save the record
                             exam_result = ExamResult(
