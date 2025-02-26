@@ -50,7 +50,8 @@ def upload_exam_results(request):
             success_count = 0
 
             required_fields = [
-                'Exam Code', 'Exam Name', 'Regulation', 'Batch', 'Programme Code', 'Programme Name',
+                # 'Exam Code', 'Exam Name', 'Regulation', 'Batch', 'Programme Code', 
+                'Programme Name',
                 'Semester', 
                 # 'Section', 
                 'Register No.', 'Student Name', 'Date of Birth', 'Course Code',
@@ -65,6 +66,7 @@ def upload_exam_results(request):
             for index, row in df.iterrows():
                 try:
                     # Check if any required field is missing
+                    
                     for field in required_fields:
                         if pd.isna(row[field]):
                             error_rows.append(f"Row {index + 1}: Missing {field} for {row['Student Name']}")
