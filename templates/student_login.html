@@ -8,6 +8,7 @@
     <link rel="icon" href="{% static 'images/KIT-LOGO-ICON.png' %}">
     <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     
     {% load static %}
 </head>
@@ -123,6 +124,42 @@
     input:checked + .slider:before {
         transform: translateX(26px);
     }
+    .captcha-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .captcha {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+    
+    .captcha img {
+        border-radius: 5px;
+        margin-top: 10px;
+        margin-right: 2px; 
+        margin-left: 5px;
+    }
+    
+    .captcha input[type="text"] {
+        border-radius: 0.375rem;
+        border: 1px solid #dee2e6;
+        padding: 0.275rem 0.15rem;
+        font-size: 1rem;
+        width: 100%;
+        max-width: 170px; /* Adjust the width as needed */
+        margin-left: 5px;
+    }
+    
+    #refreshCaptcha {
+        margin-left: 5px; /* Add some spacing between the CAPTCHA image and the refresh button */
+        margin-bottom: 10px;
+    }
+    
 </style>
 <body>
     <div class="py-3 py-md-5">
@@ -170,11 +207,39 @@
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    {{ form.captcha }}
+                                    {% comment %} <label for="id_captcha_1" class="form-label">CAPTCHA:</label> {% endcomment %}
+                                    <div class="captcha-container text-center">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <div class="captcha">
+                                                {{ form.captcha }}  <!-- This renders the CAPTCHA image and input field -->
+                                            </div>
+                                            <button type="button" class="btn btn-secondary me-2" id="refreshCaptcha">
+                                                <i class="fas fa-sync-alt"></i> <!-- Font Awesome refresh icon -->
+                                            </button>
+                                        </div>
+                                    </div>
                                     <div class="invalid-feedback">
                                         Please complete the CAPTCHA.
                                     </div>
                                 </div>
+                                
+                                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                                <script>
+                                    $(document).ready(function () {
+                                        // Refresh CAPTCHA
+                                        $('#refreshCaptcha').on('click', function() {
+                                            $.get('/captcha/refresh/', function(data) {
+                                                console.log(data); // Debugging: Check the response
+                                                $('.captcha img').attr('src', data.image_url); // Update the CAPTCHA image
+                                                $('input[name="captcha_0"]').val(data.key); // Update the hidden CAPTCHA key
+                                            });
+                                        });
+                                    });
+                                </script>
+                                
+                                
+                                
+                                
                                 <div class="col-12 text-center">
                                     <div class="d-flex justify-content-center">
                                         <button type="submit" class="btn btn-primary">
@@ -199,6 +264,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
+
         // Form validation script
         (function () {
             'use strict'
@@ -218,9 +284,6 @@
                     }
                 }
 
-                form.classList.add('was-validated')
-            }, false)
-        })()
 
             $(document).ready(function () {
                 // Initially show 'Regular' when the page loads
@@ -247,6 +310,8 @@
                     }).appendTo(this);
                 });
             });
+        });
+    });
         
     </script>
 </body>

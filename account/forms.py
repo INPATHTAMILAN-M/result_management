@@ -19,12 +19,7 @@ class LoginForm(forms.Form):
             'required': True,
         })
     )
-    # remember_me = forms.BooleanField(
-    #     required=False,
-    #     widget=forms.CheckboxInput(attrs={
-    #         'class': 'form-check-input',
-    #     })
-    # )
+
     
 class ExcelUploadForm(forms.Form):
     file = forms.FileField()
