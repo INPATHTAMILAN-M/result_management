@@ -34,6 +34,7 @@ class ExamResult(models.Model):
     grade_code = models.CharField(max_length=2)
     grade_point = models.IntegerField()
 
+    status = models.CharField(max_length=5)
     is_revaluation = models.BooleanField(default=False)
     def __str__(self):
         return f"{self.student_name} - {self.course_name} ({self.exam_name})"

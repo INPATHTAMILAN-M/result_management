@@ -55,11 +55,11 @@ def upload_exam_results(request):
                 'Semester', 
                 # 'Section', 
                 'Register No.', 'Student Name', 'Date of Birth', 'Course Code',
-                'Course Name', 
+                # 'Course Name', 
                 # 'Course Index', 'Course Credit', 
-                'Regular/Arrear', 
+                # 'Regular/Arrear', 
                 # 'Internal', 'External','Total', 
-                'Exam Result', 'Grade Code', 
+                'Exam Result', 'Grade Code', 'Status'
                 # 'Grade Point'
             ]
 
@@ -130,6 +130,7 @@ def upload_exam_results(request):
                                 exam_result=row.get('Exam Result', 'N/A'),
                                 grade_code=row.get('Grade Code', 'N/A'),
                                 grade_point=row.get('Grade Point', 0),
+                                status=row.get('Status', 'N/A'),
                                 is_revaluation=is_revaluation,
                             )
                             exam_result.save()
@@ -162,6 +163,8 @@ def student_login(request):
             dob = form.cleaned_data['dob']
             is_revaluation = request.POST.get('is_revaluation') == 'true' 
             # Look for matching exam results
+            print("is_revaluation", is_revaluation)
+            is_revaluation = "true"
             if is_revaluation:
                 data_matched = ExamResult.objects.filter(register_no=register_no, date_of_birth=dob, is_revaluation=True)
             else:

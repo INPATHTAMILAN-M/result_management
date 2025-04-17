@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,28 +16,35 @@
         background-color: #e9e9e9;
         font-size: 18px;
     }
+
     .result-table {
         width: 100%;
         border-collapse: collapse;
     }
-    .result-table th, .result-table td {
+
+    .result-table th,
+    .result-table td {
         border: 1px solid #ddd;
         padding: 8px;
         text-align: left;
     }
+
     .result-table th {
         background-color: #f2f2f2;
     }
+
     .btn-primary {
         background-color: #3a7d40 !important;
         border-color: #3a7d40 !important;
         font-size: 18px;
         padding: 10px 20px;
     }
+
     .btn-primary:hover {
         background-color: #2e6333 !important;
         border-color: #2e6333 !important;
     }
+
     .info-box {
         border: 1px solid #ddd;
         border-bottom: none;
@@ -44,6 +52,7 @@
         border-radius: 5px 5px 0 0;
         background-color: #fff;
     }
+
     /* Hide elements during printing */
     @media print {
         .no-print {
@@ -51,6 +60,7 @@
         }
     }
 </style>
+
 <body>
     <div class="py-3 py-md-5">
         <div class="container">
@@ -58,18 +68,19 @@
                 <div class="bg-white p-4 p-md-5 rounded shadow-sm">
                     <div class="row">
                         <div class="col-12 text-center">
-                            <img src="{% static 'images/KIT-logo.png' %}" alt="Logo" class="img-fluid d-block mx-auto mb-4" style="max-width: 100%;">
+                            <img src="{% static 'images/KIT-logo.png' %}" alt="Logo"
+                                class="img-fluid d-block mx-auto mb-4" style="max-width: 100%;">
                         </div>
                         <div class="col-12">
                             <div class="mb-5 text-center">
-                                <h3>Autonomous End Semester Examination Results</h3>
+                                <h3>Autonomous End Semester Examination Revaluation Results</h3>
                                 <h3> November / December 2024</h3>
                             </div>
                         </div>
                     </div>
                     <div class="info-box">
                         {% comment %} <h3 class="text-center">
-                            Result for April/May examination 2024 
+                            Result for April/May examination 2024
                         </h3> {% endcomment %}
                         <div id="regNumber"><strong>Register Number:</strong> {{ data_matched.0.register_no }}</div>
                         <div id="name"><strong>Name:</strong> {{ data_matched.0.student_name }}</div>
@@ -82,23 +93,27 @@
                                 <th>Subject Code</th>
                                 <th>Grade</th>
                                 <th>Result</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody id="resultBody">
                             {% for result in data_matched %}
-                                <tr>
-                                    <td>{{ result.semester }}</td>
-                                    <td>{{ result.course_code }}</td>
-                                    <td>{{ result.grade_code }}</td>
-                                    <td>{{ result.exam_result }}</td>
-                                </tr>
+                            <tr>
+                                <td>{{ result.semester }}</td>
+                                <td>{{ result.course_code }}</td>
+                                <td>{{ result.grade_code }}</td>
+                                <td>{{ result.exam_result }}</td>
+                                <td>{{result.status}}</td>
+                            </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                     <div class="col-12">
                         <div class="d-flex justify-content-end">
-                            {% comment %} <button class="btn btn-primary no-print" style="margin-top: 20px;" onclick="window.print()">Print</button> {% endcomment %}
-                            <button class="btn btn-primary no-print" style="margin-top: 20px;" onclick="downloadPDF()">Download as PDF</button>
+                            {% comment %} <button class="btn btn-primary no-print" style="margin-top: 20px;"
+                                onclick="window.print()">Print</button> {% endcomment %}
+                            <button class="btn btn-primary no-print" style="margin-top: 20px;"
+                                onclick="downloadPDF()">Download as PDF</button>
                         </div>
                     </div>
                     <div class="col-12 text-center no-print">
@@ -118,41 +133,41 @@
 
 
 <script>
-  function downloadPDF() {
-    const element = document.body;
+    function downloadPDF() {
+        const element = document.body;
 
-    // Exclude elements with the 'no-print' class completely during the PDF generation
-    const options = {
-      callback: function (doc) {
-        doc.save('page.pdf');
-      },
-      margin: [10, 10, 10, 10],
-      x: 10,
-      y: 10,
-      html2canvas: {
-        ignoreElements: function (el) {
-          return el.classList.contains('no-print');  // Ignore elements with 'no-print' class
-        },
-        logging: false, // Optional, disables console logging for debugging
-        letterRendering: true
-      }
-    };
+        // Exclude elements with the 'no-print' class completely during the PDF generation
+        const options = {
+            callback: function (doc) {
+                doc.save('page.pdf');
+            },
+            margin: [10, 10, 10, 10],
+            x: 10,
+            y: 10,
+            html2canvas: {
+                ignoreElements: function (el) {
+                    return el.classList.contains('no-print');  // Ignore elements with 'no-print' class
+                },
+                logging: false, // Optional, disables console logging for debugging
+                letterRendering: true
+            }
+        };
 
-    // Temporarily hide the elements with 'no-print' class before rendering
-    document.querySelectorAll('.no-print').forEach(function (element) {
-      element.style.display = 'none';
-    });
+        // Temporarily hide the elements with 'no-print' class before rendering
+        document.querySelectorAll('.no-print').forEach(function (element) {
+            element.style.display = 'none';
+        });
 
-    // Generate the PDF
-    html2pdf(element, options);
+        // Generate the PDF
+        html2pdf(element, options);
 
-    // Re-enable the 'no-print' elements after generating the PDF
-    setTimeout(() => {
-      document.querySelectorAll('.no-print').forEach(function (element) {
-        element.style.display = ''; // Reset display property
-      });
-    }, 500);  // Delay to ensure the PDF generation finishes
-  }
+        // Re-enable the 'no-print' elements after generating the PDF
+        setTimeout(() => {
+            document.querySelectorAll('.no-print').forEach(function (element) {
+                element.style.display = ''; // Reset display property
+            });
+        }, 500);  // Delay to ensure the PDF generation finishes
+    }
 </script>
 
 </html>
