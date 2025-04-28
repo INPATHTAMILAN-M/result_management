@@ -179,6 +179,7 @@ def student_login(request):
                     for result in data_matched.values()
                 ]
                 request.session['data_matched'] = data_matched_list
+                print(data_matched_list)
                 return redirect('results')  
             else:
                 error = "No matching data found for the given Registration Number and Date of Birth."
