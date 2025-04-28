@@ -73,7 +73,12 @@
                         </div>
                         <div class="col-12">
                             <div class="mb-5 text-center">
+                                
+                                {% if is_revaluation %}
                                 <h3>Autonomous End Semester Examination Revaluation Results</h3>
+                                {% else %}
+                                <h3>Autonomous End Semester Examination Results</h3>
+                                {% endif %}
                                 <h3> November / December 2024</h3>
                             </div>
                         </div>
@@ -118,7 +123,6 @@
                     </div>
                     <div class="col-12 text-center no-print">
                         <p><a href="{% url 'student_login' %}">Back to login</a></p>
-                        <p><a href="{% url 'results' %}">Try Again</a></p>
                     </div>
                 </div>
             </div>

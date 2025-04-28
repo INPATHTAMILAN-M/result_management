@@ -9,8 +9,6 @@
     <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    
-    {% load static %}
 </head>
 <style>
     body {
@@ -79,51 +77,18 @@
         text-align: center;
         margin-top: 1rem;
     }
-    /* Toggle switch styles */
-    .switch {
-        position: relative;
-        display: inline-block;
-        width: 60px;
-        height: 34px;
-    }
-
-    .switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-    }
-
-    .slider {
-        position: absolute;
+    
+    /* New toggle option styles */
+    .toggle-option {
         cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #ccc;
-        transition: .4s;
-        border-radius: 34px;
+        font-weight: bold;
+        color: #777;
     }
-
-    .slider:before {
-        position: absolute;
-        content: "";
-        height: 26px;
-        width: 26px;
-        border-radius: 50%;
-        left: 4px;
-        bottom: 4px;
-        background-color: white;
-        transition: .4s;
+    .toggle-option.active {
+        color: #3a7d40;
+        text-decoration: underline;
     }
-
-    input:checked + .slider {
-        background-color: #3fa46a;
-    }
-
-    input:checked + .slider:before {
-        transform: translateX(26px);
-    }
+    
     .captcha-container {
         display: flex;
         flex-direction: column;
@@ -151,15 +116,14 @@
         padding: 0.275rem 0.15rem;
         font-size: 1rem;
         width: 100%;
-        max-width: 170px; /* Adjust the width as needed */
+        max-width: 170px;
         margin-left: 5px;
     }
     
     #refreshCaptcha {
-        margin-left: 5px; /* Add some spacing between the CAPTCHA image and the refresh button */
+        margin-left: 5px;
         margin-bottom: 10px;
     }
-    
 </style>
 <body>
     <div class="py-3 py-md-5">
@@ -172,24 +136,26 @@
                                 <img src="{% static 'images/KIT-logo.png' %}" alt="Logo" class="img-fluid d-block mx-auto mb-4" style="max-width: 300px;">
                             </div>
                             <div class="col-12">
-                                <div class="mb-5 text-center">
+                                <div class="mb-2 text-center">
                                     <h1>Student Login</h1>
-                                    <!-- Toggle for Regular/Revaluation -->
-                                    <div class="col-12 mt-4 d-flex justify-content-center">
-                                        <span id="toggleLabe2" class="ml-2">Regular&nbsp;</span>
-                                        <label class="switch">
-                                            <input type="checkbox" id="revaluationToggle" name="is_revaluation">
-                                            <span class="slider round"></span>
-                                        </label>
-                                        &nbsp;<span id="toggleLabel" class="ml-2">Revaluation</span> <!-- Default text is 'Regular' -->
-                                    </div>
                                 </div>
-                                
                             </div>
-                            
                         </div>
 
                         <form id="studentForm" method="POST" novalidate>
+                            <!-- Modified Toggle for Regular/Revaluation -->
+                            <div class="col-12 mt-4 text-center">
+                                <div class="d-inline-flex align-items-center" style="gap: 10px;">
+                                    <span class="toggle-option {% if not form.is_revaluation.value %}active{% endif %}" 
+                                          id="regularOption" data-value="false">Regular</span>
+                                    <span class="text-muted">|</span>
+                                    <span class="toggle-option {% if form.is_revaluation.value %}active{% endif %}" 
+                                          id="revaluationOption" data-value="true">Revaluation</span>
+                                    <input type="hidden" name="is_revaluation" id="is_revaluation" 
+                                           value="{{ form.is_revaluation.value|default:'false' }}">
+                                </div>
+                            </div>
+                            <br>
                             {% csrf_token %}
                             <div class="row gy-3 gy-md-4 overflow-hidden">
                                 <div class="col-12">
@@ -207,14 +173,13 @@
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    {% comment %} <label for="id_captcha_1" class="form-label">CAPTCHA:</label> {% endcomment %}
                                     <div class="captcha-container text-center">
                                         <div class="d-flex align-items-center justify-content-center">
                                             <div class="captcha">
-                                                {{ form.captcha }}  <!-- This renders the CAPTCHA image and input field -->
+                                                {{ form.captcha }}
                                             </div>
                                             <button type="button" class="btn btn-secondary me-2" id="refreshCaptcha">
-                                                <i class="fas fa-sync-alt"></i> <!-- Font Awesome refresh icon -->
+                                                <i class="fas fa-sync-alt"></i>
                                             </button>
                                         </div>
                                     </div>
@@ -222,23 +187,6 @@
                                         Please complete the CAPTCHA.
                                     </div>
                                 </div>
-                                
-                                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-                                <script>
-                                    $(document).ready(function () {
-                                        // Refresh CAPTCHA
-                                        $('#refreshCaptcha').on('click', function() {
-                                            $.get('/captcha/refresh/', function(data) {
-                                                console.log(data); // Debugging: Check the response
-                                                $('.captcha img').attr('src', data.image_url); // Update the CAPTCHA image
-                                                $('input[name="captcha_0"]').val(data.key); // Update the hidden CAPTCHA key
-                                            });
-                                        });
-                                    });
-                                </script>
-                                
-                                
-                                
                                 
                                 <div class="col-12 text-center">
                                     <div class="d-flex justify-content-center">
@@ -250,7 +198,6 @@
                             </div>
                         </form>
 
-                        <!-- Error Message -->
                         {% if error %}
                             <div class="error-message">
                                 <p>{{ error }}</p>
@@ -262,57 +209,42 @@
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
     <script>
+        $(document).ready(function () {
+            // Toggle between Regular and Revaluation
+            $('.toggle-option').on('click', function() {
+                $('.toggle-option').removeClass('active');
+                $(this).addClass('active');
+                // Get the data-value of the clicked option
+                $('#is_revaluation').val($(this).data('value'));
+                // console.log("Updated is_revaluation hidden input value: " + $('#is_revaluation').val());
+            });
 
-        // Form validation script
-        (function () {
-            'use strict'
+            // Refresh CAPTCHA
+            $('#refreshCaptcha').on('click', function() {
+                $.get('/captcha/refresh/', function(data) {
+                    $('.captcha img').attr('src', data.image_url);
+                    $('input[name="captcha_0"]').val(data.key);
+                });
+            });
 
-            const form = document.getElementById('studentForm')
-
-            form.addEventListener('submit', function (event) {
+            // Form validation
+            const form = document.getElementById('studentForm');
+            form.addEventListener('submit', function(event) {
+                // console.log("Form is being submitted with is_revaluation: " + $('#is_revaluation').val());
                 if (!form.checkValidity()) {
-                    event.preventDefault()
-                    event.stopPropagation()
+                    event.preventDefault();
+                    event.stopPropagation();
                 } else {
-                    // Check if reCAPTCHA is filled
                     const response = grecaptcha.getResponse();
                     if (response.length === 0) {
-                        event.preventDefault()
+                        event.preventDefault();
                         alert("Please complete the CAPTCHA.");
                     }
                 }
-
-
-            $(document).ready(function () {
-                // Initially show 'Regular' when the page loads
-                $('#toggleLabel').text('Revaluation');
-        
-                // Handle toggle change event
-                $('#revaluationToggle').on('change', function() {
-                    var toggleLabel = $('#toggleLabel');
-                    if ($(this).prop('checked')) {
-                        toggleLabel.text('Revaluation');  // When checked, show 'Revaluation'
-                    } else {
-                        toggleLabel.text('Revaluation');  // When unchecked, show 'Regular'
-                    }
-                });
-        
-                // Ensure the form includes the toggle state on submit
-                $('#studentForm').on('submit', function(e) {
-                    // Add the is_revaluation value to the form submission if the toggle is checked
-                    var isRevaluation = $('#revaluationToggle').prop('checked');
-                    $('<input>').attr({
-                        type: 'hidden',
-                        name: 'is_revaluation',
-                        value: isRevaluation
-                    }).appendTo(this);
-                });
-            });
+                form.classList.add('was-validated');
+            }, false);
         });
-    });
-        
     </script>
 </body>
 </html>

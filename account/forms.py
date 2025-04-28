@@ -24,9 +24,8 @@ class LoginForm(forms.Form):
 class ExcelUploadForm(forms.Form):
     file = forms.FileField()
 
-
-
 class MatchForm(forms.Form):
-    register_no = forms.CharField(max_length=15)
+    register_no = forms.CharField(max_length=20)
     dob = forms.DateField()
-    captcha = CaptchaField()  # This adds the CAPTCHA field to the form
+    captcha = CaptchaField()
+    is_revaluation = forms.BooleanField(required=False)

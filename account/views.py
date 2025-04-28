@@ -59,7 +59,7 @@ def upload_exam_results(request):
                 # 'Course Index', 'Course Credit', 
                 # 'Regular/Arrear', 
                 # 'Internal', 'External','Total', 
-                'Exam Result', 'Grade Code', 'Status'
+                'Exam Result', 'Grade Code'
                 # 'Grade Point'
             ]
 
@@ -150,57 +150,47 @@ def upload_exam_results(request):
     
     return render(request, 'upload_page.html')
 
-
 def student_login(request):
     error = None
-    data_matched = None
-
     if request.method == 'POST':
         form = MatchForm(request.POST)
-
-        if form.is_valid():  # This validates the entire form including CAPTCHA
+        
+        # Check if the form is valid and CAPTCHA is correct
+        if form.is_valid():
+            # Get form data
+            is_revaluation = form.cleaned_data['is_revaluation']
             register_no = form.cleaned_data['register_no']
             dob = form.cleaned_data['dob']
-            is_revaluation = request.POST.get('is_revaluation') == 'true' 
-            # Look for matching exam results
-            print("is_revaluation", is_revaluation)
-            is_revaluation = "true"
-            if is_revaluation:
-                data_matched = ExamResult.objects.filter(register_no=register_no, date_of_birth=dob, is_revaluation=True)
-            else:
-                data_matched = ExamResult.objects.filter(register_no=register_no, date_of_birth=dob, is_revaluation=False)
+            
+            print(f"Revaluation status: {is_revaluation}")  # Debug output
+            print(f"Searching for: RegNo={register_no}, DOB={dob}, Reval={is_revaluation}")
 
-            if data_matched.exists():
-                data_matched_list = [
-                    {
-                        **result,
-                        'date_of_birth': result['date_of_birth'].strftime('%Y-%m-%d') 
-                    }
-                    for result in data_matched.values()
-                ]
-                request.session['data_matched'] = data_matched_list
-                return redirect('results')  
+            # Query the database for matching results
+            results = ExamResult.objects.filter(
+                register_no=register_no,
+                date_of_birth=dob,
+                is_revaluation=is_revaluation
+            )
+
+            if results.exists():
+                # Process results if any match is found
+                data_matched_list = [{
+                    **result.__dict__,
+                    'date_of_birth': result.date_of_birth.strftime('%Y-%m-%d')
+                } for result in results]
+                return render(request, 'results.html', {
+                    'data_matched': data_matched_list,
+                    'is_revaluation': is_revaluation
+                })
             else:
+                # If no results are found, show an error message
                 error = "No matching data found for the given Registration Number and Date of Birth."
         else:
-            # Handle CAPTCHA error separately
-            if 'captcha' in form.errors:
-                error = "Incorrect CAPTCHA. Please try again."
-                # Reset the captcha field by setting it to None
-                form.fields['captcha'].widget.attrs['value'] = ''  # This will "reset" the CAPTCHA field
-
-            else:
-                error = "Invalid form data. Please check your input and try again."
+            # Print form errors if validation fails (including CAPTCHA)
+            print(f"Form errors: {form.errors}")
+            error = "Please enter the correct CAPTCHA."
 
     else:
         form = MatchForm()
 
     return render(request, 'student_login.html', {'form': form, 'error': error})
-
-def results(request):
-    data_matched = request.session.get('data_matched', None)
-    
-    if data_matched:
-        return render(request, 'results.html', {'data_matched': data_matched})
-    else:
-        return HttpResponse("No data to display. Please try again.", status=404)

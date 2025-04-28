@@ -20,14 +20,7 @@ MEDIA_URL = '/media/'  # URL path for accessing media files
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Define the directory where files will be stored on your filesystem
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # This creates a 'media' folder in the root of your project
 
-# settings.py
-
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),  # Add your static files directory
-]
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -99,13 +92,8 @@ DATABASES = {
         'USER': 'root',
         'PASSWORD': 'root',
         'HOST': 'localhost',
-        'PORT': '3307',
-        'OPTIONS': {
-        'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        'charset': 'utf8mb4',
-        },
-        
-    }
+        'PORT': '3306',
+   }
 }
 
 # Password validation
@@ -139,11 +127,15 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  
+# settings.py
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),  # Add your static files directory
+]
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 

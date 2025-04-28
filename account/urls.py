@@ -8,6 +8,6 @@ urlpatterns = [
     # path('clear-data/', clear_data, name='clear_data'),
     path('clear_data/', upload_exam_results, name='clear_data_test'),
     path('', student_login, name='student_login'), 
-    path('results/', results, name='results'),
+    # path('results/', results, name='results'),
 
 ]
