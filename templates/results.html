@@ -158,25 +158,34 @@
 async function downloadPDF() {
     const element = document.body;
 
-    // Provide a fallback filename
-    const registerNo = 'MyDocument';
+    const registerNo = 'MyDocument'; // Replace with your dynamic value if needed
 
-    // Hide elements marked as 'no-print'
+    // Hide elements you don't want in PDF
     document.querySelectorAll('.no-print').forEach(el => el.style.visibility = 'hidden');
 
     try {
-      // Render the page into canvas
-      const canvas = await html2canvas(element, {
+      // Clone the body to avoid modifications on the visible page
+      const clone = element.cloneNode(true);
+      const container = document.createElement('div');
+      container.style.position = 'absolute';
+      container.style.left = '-9999px';
+      container.appendChild(clone);
+      document.body.appendChild(container);
+
+      // Use html2canvas to capture the cloned content
+      const canvas = await html2canvas(clone, {
         scale: 2,
         useCORS: true,
+        windowWidth: document.body.scrollWidth,
+        windowHeight: document.body.scrollHeight
       });
 
       const imgData = canvas.toDataURL('image/jpeg', 1.0);
 
-      // Import jsPDF module
+      // Import jsPDF
       const { jsPDF } = window.jspdf;
 
-      // Create a PDF matching the full canvas height
+      // Create PDF matching content dimensions
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'px',
@@ -186,16 +195,17 @@ async function downloadPDF() {
       pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
       pdf.save(registerNo + '.pdf');
 
+      // Cleanup
+      document.body.removeChild(container);
+
     } catch (err) {
       console.error("PDF generation failed:", err);
       alert("Error generating PDF. Check console for details.");
     }
 
-    // Restore the hidden elements
+    // Show the hidden elements again
     document.querySelectorAll('.no-print').forEach(el => el.style.visibility = 'visible');
   }
-
-
 </script>
 
 
