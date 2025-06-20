@@ -160,20 +160,19 @@
     const registerNo = "{{ data_matched.0.register_no }}";
 async function downloadPDF() {
   const element = document.getElementById('pdf-content');
-//   const registerNo = 'MyDocument'; // Change this as needed
 
-  // Hide .no-print elements
+  // Hide non-print elements
   document.querySelectorAll('.no-print').forEach(el => el.style.visibility = 'hidden');
 
   try {
+    // Render with higher scale (2 or even 3 for better resolution)
     const canvas = await html2canvas(element, {
-      scale: 2,
+      scale: 3, // Higher scale = sharper text/images
       useCORS: true,
-      windowWidth: element.scrollWidth,
-      windowHeight: element.scrollHeight
+      backgroundColor: '#ffffff' // optional to set background white
     });
 
-    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+    const imgData = canvas.toDataURL('image/png'); // PNG = lossless, better for text
     const { jsPDF } = window.jspdf;
 
     const pdf = new jsPDF({
@@ -182,11 +181,11 @@ async function downloadPDF() {
       format: [canvas.width, canvas.height]
     });
 
-    pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
+    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
     pdf.save(registerNo + '.pdf');
   } catch (error) {
-    console.error('PDF generation failed:', error);
-    alert('PDF generation failed. Check console for error.');
+    console.error('High-quality PDF generation failed:', error);
+    alert('Something went wrong. Check the console for details.');
   }
 
   // Restore visibility
