@@ -71,8 +71,11 @@
 
 </style>
 
-<body>
-    <div class="py-3 py-md-5">
+<!-- <body>
+
+</body> -->
+<div id="pdf-content">
+      <div class="py-3 py-md-5">
         <div class="container">
             <div class="row justify-content-md-center">
                 <div class="bg-white p-4 p-md-5 rounded shadow-sm">
@@ -142,7 +145,7 @@
             </div>
         </div>
     </div>
-</body>
+</div>
 
 <!-- Add jsPDF and html2pdf library -->
 <!-- Add jsPDF and html2pdf library -->
@@ -156,56 +159,40 @@
 <script>
     const registerNo = "{{ data_matched.0.register_no }}";
 async function downloadPDF() {
-    const element = document.body;
+  const element = document.getElementById('pdf-content');
+  const registerNo = 'MyDocument'; // Change this as needed
 
-    const registerNo = 'MyDocument'; // Replace with your dynamic value if needed
+  // Hide .no-print elements
+  document.querySelectorAll('.no-print').forEach(el => el.style.visibility = 'hidden');
 
-    // Hide elements you don't want in PDF
-    document.querySelectorAll('.no-print').forEach(el => el.style.visibility = 'hidden');
+  try {
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      windowWidth: element.scrollWidth,
+      windowHeight: element.scrollHeight
+    });
 
-    try {
-      // Clone the body to avoid modifications on the visible page
-      const clone = element.cloneNode(true);
-      const container = document.createElement('div');
-      container.style.position = 'absolute';
-      container.style.left = '-9999px';
-      container.appendChild(clone);
-      document.body.appendChild(container);
+    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+    const { jsPDF } = window.jspdf;
 
-      // Use html2canvas to capture the cloned content
-      const canvas = await html2canvas(clone, {
-        scale: 2,
-        useCORS: true,
-        windowWidth: document.body.scrollWidth,
-        windowHeight: document.body.scrollHeight
-      });
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'px',
+      format: [canvas.width, canvas.height]
+    });
 
-      const imgData = canvas.toDataURL('image/jpeg', 1.0);
-
-      // Import jsPDF
-      const { jsPDF } = window.jspdf;
-
-      // Create PDF matching content dimensions
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'px',
-        format: [canvas.width, canvas.height]
-      });
-
-      pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
-      pdf.save(registerNo + '.pdf');
-
-      // Cleanup
-      document.body.removeChild(container);
-
-    } catch (err) {
-      console.error("PDF generation failed:", err);
-      alert("Error generating PDF. Check console for details.");
-    }
-
-    // Show the hidden elements again
-    document.querySelectorAll('.no-print').forEach(el => el.style.visibility = 'visible');
+    pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
+    pdf.save(registerNo + '.pdf');
+  } catch (error) {
+    console.error('PDF generation failed:', error);
+    alert('PDF generation failed. Check console for error.');
   }
+
+  // Restore visibility
+  document.querySelectorAll('.no-print').forEach(el => el.style.visibility = 'visible');
+}
+
 </script>
 
 
