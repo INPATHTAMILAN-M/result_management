@@ -149,54 +149,51 @@
 <!-- Add jsPDF and html2pdf library -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 
 <script>
     const registerNo = "{{ data_matched.0.register_no }}";
-function downloadPDF() {
-  const element = document.body;
+async function downloadPDF() {
+    const element = document.body;
 
-  // Hide elements you don't want in the PDF
-  document.querySelectorAll('.no-print').forEach(el => el.style.visibility = 'hidden');
+    // Provide a fallback filename
+    const registerNo = 'MyDocument';
 
-  const options = {
-    margin: 0,
-    filename: registerNo + '.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: {
-      scale: 2,
-      logging: false,
-      letterRendering: true,
-      useCORS: true
-    },
-    jsPDF: {
-      orientation: 'portrait',
-      unit: 'px',
-      format: 'a4' // Temporarily use this for dimensions, but override below
-    },
-    pagebreak: { mode: [] } // Disable page breaks
-  };
+    // Hide elements marked as 'no-print'
+    document.querySelectorAll('.no-print').forEach(el => el.style.visibility = 'hidden');
 
-  html2canvas(element, {
-    scale: 2,
-    useCORS: true
-  }).then(canvas => {
-    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+    try {
+      // Render the page into canvas
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+      });
 
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'px',
-      format: [canvas.width, canvas.height] // Set custom size matching content
-    });
+      const imgData = canvas.toDataURL('image/jpeg', 1.0);
 
-    pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
-    pdf.save(registerNo + '.pdf');
+      // Import jsPDF module
+      const { jsPDF } = window.jspdf;
 
-    // Show the hidden elements back
+      // Create a PDF matching the full canvas height
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'px',
+        format: [canvas.width, canvas.height]
+      });
+
+      pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
+      pdf.save(registerNo + '.pdf');
+
+    } catch (err) {
+      console.error("PDF generation failed:", err);
+      alert("Error generating PDF. Check console for details.");
+    }
+
+    // Restore the hidden elements
     document.querySelectorAll('.no-print').forEach(el => el.style.visibility = 'visible');
-  });
-}
-
+  }
 
 
 </script>
