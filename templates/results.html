@@ -156,25 +156,47 @@
 function downloadPDF() {
   const element = document.body;
 
+  // Hide elements you don't want in the PDF
   document.querySelectorAll('.no-print').forEach(el => el.style.visibility = 'hidden');
 
   const options = {
-    margin: [5, 5, 5, 2],  // Bottom margin reduced
+    margin: 0,
     filename: registerNo + '.pdf',
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: {
-      scale: 1.5, // Try lowering to 1.5 if 2 causes overflow
+      scale: 2,
       logging: false,
-      letterRendering: true
+      letterRendering: true,
+      useCORS: true
     },
-    jsPDF: { unit: 'mm', orientation: 'portrait' },
-    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    jsPDF: {
+      orientation: 'portrait',
+      unit: 'px',
+      format: 'a4' // Temporarily use this for dimensions, but override below
+    },
+    pagebreak: { mode: [] } // Disable page breaks
   };
 
-  html2pdf().set(options).from(element).save().then(() => {
+  html2canvas(element, {
+    scale: 2,
+    useCORS: true
+  }).then(canvas => {
+    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'px',
+      format: [canvas.width, canvas.height] // Set custom size matching content
+    });
+
+    pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
+    pdf.save(registerNo + '.pdf');
+
+    // Show the hidden elements back
     document.querySelectorAll('.no-print').forEach(el => el.style.visibility = 'visible');
   });
 }
+
 
 
 </script>
