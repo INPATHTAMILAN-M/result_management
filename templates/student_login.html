@@ -151,6 +151,9 @@
                                     <span class="text-muted">|</span>
                                     <span class="toggle-option {% if form.is_revaluation.value %}active{% endif %}" 
                                           id="revaluationOption" data-value="true">Revaluation</span>
+                                    <span class="text-muted">|</span>
+                                    <span class="toggle-option" 
+                                          id="reviewRevaluationOption" data-value="true">Review Revaluation</span>
                                     <input type="hidden" name="is_revaluation" id="is_revaluation" 
                                            value="{{ form.is_revaluation.value|default:'false' }}">
                                 </div>
