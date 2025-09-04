@@ -165,53 +165,6 @@
     .popup button {
         margin-right: 10px;
     }
-   /* Toggle switch styles */
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 34px;
-  }
-  
-  .switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-  
-  .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: .4s;
-    border-radius: 34px;
-  }
-  
-  .slider:before {
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 26px;
-    border-radius: 50%;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: .4s;
-  }
-  
-  input:checked + .slider {
-    background-color: #3fa46a;
-  }
-  
-  input:checked + .slider:before {
-    transform: translateX(26px);
-  }
-  
-  
 </style>
 <body>
     <script type="text/javascript" src="//code.jquery.com/jquery-1.10.2.min.js"></script>
@@ -227,14 +180,27 @@
                         </div>
                         <form id="uploadForm" method="POST" enctype="multipart/form-data" novalidate>
                             {% csrf_token %}
-                            <!-- Toggle Button for Regular / Revaluation -->
-                            <div class="d-flex justify-content-center mt-4">
-                                <span id="toggleLabe2" class="ml-2">Regular&nbsp;</span>
-                                <label class="switch">
-                                    <input type="checkbox" id="revaluationToggle">
-                                    <span class="slider round"></span>
-                                </label>
-                                &nbsp;<span id="toggleLabel" class="ml-2">;Revaluation</span>  <!-- Default text is 'Regular' -->
+                            <div class="col-12 mt-4 text-center">
+                                <div class="d-inline-flex align-items-center" style="gap: 15px;">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="result_type" id="regularRadio" value="regular" checked>
+                                        <label class="form-check-label" for="regularRadio">
+                                            Regular
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="result_type" id="revaluationRadio" value="revaluation">
+                                        <label class="form-check-label" for="revaluationRadio">
+                                            Revaluation
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="result_type" id="reviewRevaluationRadio" value="review_revaluation">
+                                        <label class="form-check-label" for="reviewRevaluationRadio">
+                                            Review Revaluation
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
                             <br>
                             <h4>Upload file</h4>
@@ -377,45 +343,6 @@
                 }
             });
         });
-        $(document).ready(function () {
-            // Initially show 'Regular' when the page loads
-            $('#toggleLabel').text('Revaluation');
-            
-            // Handle toggle change
-            $('#revaluationToggle').on('change', function() {
-                var toggleLabel = $('#toggleLabel');
-                if ($(this).prop('checked')) {
-                    toggleLabel.text('Revaluation');  // When checked, show 'Revaluation'
-                } else {
-                    toggleLabel.text('Revaluation');  // When unchecked, show 'Regular'
-                }
-            });
-        
-            // Handle form submission
-            $('#uploadForm').on('submit', function(e) {
-                // Check if 'clear_data' button is clicked
-                if ($('input[name="clear_data"]').length > 0) {
-                    // If the 'clear_data' button is clicked, allow the form to submit without file validation
-                    return true;
-                }
-        
-                var fileInput = $('#chooseFile');
-                if (fileInput.get(0).files.length === 0) {
-                    alert('No file chosen. Please select a file to upload.');
-                    e.preventDefault();
-                } else {
-                    // Show processing message
-                    $('#processingMessage').show();
-                    // Disable submit button to prevent multiple submissions
-                    $('#submitBtn').prop('disabled', true);
-        
-                    // Check the state of the toggle switch to set is_revaluation
-                    var isRevaluation = $('#revaluationToggle').prop('checked');
-                    $('#uploadForm').append('<input type="hidden" name="is_revaluation" value="' + isRevaluation + '">');
-                }
-            });
-        });
-        
     </script>
 </body>
 </html>

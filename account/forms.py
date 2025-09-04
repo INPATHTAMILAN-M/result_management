@@ -28,4 +28,11 @@ class MatchForm(forms.Form):
     register_no = forms.CharField(max_length=20)
     dob = forms.DateField()
     captcha = CaptchaField()
-    is_revaluation = forms.BooleanField(required=False)
+    result_type = forms.ChoiceField(
+        choices=[
+            ('regular', 'Regular'),
+            ('revaluation', 'Revaluation'),
+            ('review_revaluation', 'Review Revaluation'),
+        ],
+        widget=forms.RadioSelect,
+    )

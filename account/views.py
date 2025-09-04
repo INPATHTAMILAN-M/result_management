@@ -83,7 +83,10 @@ def upload_exam_results(request):
                         except Exception as e:
                             error_rows.append(f"Row {index + 1}: Error processing Date of Birth for {row['Student Name']} - {str(e)}")
                             continue
-                        is_revaluation=request.POST.get('is_revaluation') == 'true'
+                        result_type = request.POST.get('result_type', 'regular')
+                        is_revaluation = result_type == 'revaluation'
+                        is_review_revaluation = result_type == 'review_revaluation'
+
                         # Check for duplicate entry based on register_no, exam_code, and dob
                         if is_revaluation:
                             duplicate_exists = ExamResult.objects.filter(
@@ -92,15 +95,21 @@ def upload_exam_results(request):
                                 date_of_birth=row['Date of Birth'],
                                 is_revaluation=True
                             ).exists()
-                            is_revaluation = True
+                        elif is_review_revaluation:
+                            duplicate_exists = ExamResult.objects.filter(
+                                register_no=row['Register No.'],
+                                course_code=row['Course Code'],
+                                date_of_birth=row['Date of Birth'],
+                                is_review_revaluation=True
+                            ).exists()
                         else:
                             duplicate_exists = ExamResult.objects.filter(
                                 register_no=row['Register No.'],
                                 course_code=row['Course Code'],
                                 date_of_birth=row['Date of Birth'],
-                                is_revaluation=False
+                                is_revaluation=False,
+                                is_review_revaluation=False
                             ).exists()
-                            is_revaluation = False
 
                         if duplicate_exists:
                             error_rows.append(f"Row {index + 1}: Duplicate entry for Register No. {row['Register No.']}, Course Code {row['Course Code']}, and Date of Birth {row['Date of Birth']}")
@@ -132,6 +141,7 @@ def upload_exam_results(request):
                                 grade_point=row.get('Grade Point', 0),
                                 status=row.get('Status', 'N/A'),
                                 is_revaluation=is_revaluation,
+                                is_review_revaluation=is_review_revaluation,
                             )
                             exam_result.save()
                             success_count += 1
@@ -152,45 +162,44 @@ def upload_exam_results(request):
 
 def student_login(request):
     error = None
+
     if request.method == 'POST':
         form = MatchForm(request.POST)
-        
-        # Check if the form is valid and CAPTCHA is correct
-        if form.is_valid():
-            # Get form data
-            is_revaluation = form.cleaned_data['is_revaluation']
-            register_no = form.cleaned_data['register_no']
-            dob = form.cleaned_data['dob']
-            
-            print(f"Revaluation status: {is_revaluation}")  # Debug output
-            print(f"Searching for: RegNo={register_no}, DOB={dob}, Reval={is_revaluation}")
 
-            # Query the database for matching results
-            results = ExamResult.objects.filter(
-                register_no=register_no,
-                date_of_birth=dob,
-                is_revaluation=is_revaluation
-            )
+        if form.is_valid():
+            result_type = form.cleaned_data['result_type']
+            filters = {
+                "register_no": form.cleaned_data['register_no'],
+                "date_of_birth": form.cleaned_data['dob'],
+            }
+
+            # Adjust filters based on result_type
+            if result_type == "revaluation":
+                filters["is_revaluation"] = True
+            elif result_type == "review_revaluation":
+                filters["is_review_revaluation"] = True
+            else:  # regular
+                filters["is_revaluation"] = False
+                filters["is_review_revaluation"] = False
+
+
+            print(filters)
+
+            results = ExamResult.objects.filter(**filters)
 
             if results.exists():
-                # Process results if any match is found
-                data_matched_list = [{
-                    **result.__dict__,
-                    'date_of_birth': result.date_of_birth.strftime('%Y-%m-%d')
-                } for result in results]
-                return render(request, 'results.html', {
-                    'data_matched': data_matched_list,
-                    'is_revaluation': is_revaluation
+                data_matched_list = [
+                    {**r.__dict__, "date_of_birth": r.date_of_birth.strftime("%Y-%m-%d")}
+                    for r in results
+                ]
+                return render(request, "results.html", {
+                    "data_matched": data_matched_list,
+                    "result_type": result_type,
                 })
-            else:
-                # If no results are found, show an error message
-                error = "No matching data found for the given Registration Number and Date of Birth."
+            error = "No matching data found for the given Registration Number and Date of Birth."
         else:
-            # Print form errors if validation fails (including CAPTCHA)
-            print(f"Form errors: {form.errors}")
-            error = "Please enter the correct CAPTCHA."
-
+            error = "Please fix the errors in the form."
     else:
-        form = MatchForm()
+        form = MatchForm(initial={"result_type": "regular"})
 
-    return render(request, 'student_login.html', {'form': form, 'error': error})
+    return render(request, "student_login.html", {"form": form, "error": error})
