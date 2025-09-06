@@ -165,7 +165,6 @@ def student_login(request):
 
     if request.method == 'POST':
         form = MatchForm(request.POST)
-
         if form.is_valid():
             result_type = form.cleaned_data['result_type']
             filters = {
@@ -181,10 +180,6 @@ def student_login(request):
             else:  # regular
                 filters["is_revaluation"] = False
                 filters["is_review_revaluation"] = False
-
-
-            print(filters)
-
             results = ExamResult.objects.filter(**filters)
 
             if results.exists():
@@ -198,7 +193,8 @@ def student_login(request):
                 })
             error = "No matching data found for the given Registration Number and Date of Birth."
         else:
-            error = "Please fix the errors in the form."
+            print(form.errors)
+            error = "Please Provide Correct Captcha Code."
     else:
         form = MatchForm(initial={"result_type": "regular"})
 
