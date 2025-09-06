@@ -21,13 +21,13 @@
         .form-control {
             width: 100%;
             max-width: 300px;
-            margin: 0 auto;
+            /* margin: 0 auto; */
         }
         .form-label {
             display: block;
             width: 100%;
             margin-bottom: 0.5rem;
-            margin-left: 55px;
+            /* margin-left: 55px; */
         }
         .g-recaptcha {
             margin: 1.5rem 0;
@@ -75,16 +75,16 @@
             text-decoration: underline;
         }
         .captcha-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            /* display: flex; */
+            /* flex-direction: column; */
+            /* align-items: center;  */
             margin-bottom: 1rem;
         }
         .captcha {
             display: flex;
             align-items: center;
-            justify-content: center;
-            margin-bottom: 1rem;
+            justify-content: space-between;
+            /* margin-bottom: 1rem; */
         }
         .captcha img {
             border-radius: 5px;
@@ -146,28 +146,28 @@
                             </div>
                             <br>
 
-                            <div class="row gy-3 gy-md-4 overflow-hidden">
-                                <div class="col-12">
+                            <div class="row gy-3 gy-md-4 overflow-hidden d-flex justify-content-center ">
+                                <div class="col-10">
                                     <label for="register_no" class="form-label">Registration Number:</label>
-                                    <input type="text" class="form-control mx-auto" 
+                                    <input type="text" class="form-control" 
                                            name="register_no" id="register_no"  
                                            value="{{ form.register_no.value|default:'' }}" required>
                                     <div class="invalid-feedback">
                                         Please enter your registration number.
                                     </div>
                                 </div>
-                                <div class="col-12">
+                                <div class="col-10">
                                     <label for="dob" class="form-label">Date of Birth:</label>
-                                    <input type="date" class="form-control mx-auto" 
+                                    <input type="date" class="form-control" 
                                            name="dob" id="dob" 
                                            value="{{ form.dob.value|default:'' }}" required>
                                     <div class="invalid-feedback">
                                         Please enter your date of birth.
                                     </div>
                                 </div>
-                                <div class="col-12">
-                                    <div class="captcha-container text-center">
-                                        <div class="d-flex align-items-center justify-content-center">
+                                <div class="col-10">
+                                    <div class="captcha-container ">
+                                        <div class="d-flex">
                                             <div class="captcha">
                                                 {{ form.captcha }}
                                             </div>
@@ -181,7 +181,7 @@
                                     </div>
                                 </div>
                                 
-                                <div class="col-12 text-center">
+                                <div class="col-10 text-center">
                                     <div class="d-flex justify-content-center">
                                         <button type="submit" class="btn btn-primary">
                                             Log in
